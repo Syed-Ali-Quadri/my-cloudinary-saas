@@ -3,8 +3,21 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import VideoCard from "@/components/VideoCard";
 
+export interface Video {
+    id: string
+    title: string
+    description: string
+    publicId: string
+    originalSize: number
+    compressedSize: number
+    duration: number
+    createdAt: Date
+    updatedAt: Date
+}
+
 function Home() {
-	const [videos, setVideos] = useState([]);
+
+	const [videos, setVideos] = useState<Video[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
