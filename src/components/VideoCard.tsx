@@ -19,7 +19,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
 	const [isPreviewError, setIsPreviewError] = useState(false); // Removed React.useState for cleaner syntax
 
 	const getThumbnailUrl = useCallback((publicId: string) => {
-		return getCldVideoUrl({
+		return getCldImageUrl({
 			src: publicId,
 			width: 400,
 			height: 225,
