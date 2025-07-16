@@ -1,27 +1,31 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-const videoUpload = () => {
+function VideoUpload() {
 	const [file, setFile] = useState<File | null>(null);
-	const [title, setTitle] = useState<string>("");
-	const [description, setDescription] = useState<string>("");
-	const [isUploading, setIsUploading] = useState<boolean>(false);
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
+	const [isUploading, setIsUploading] = useState(false);
 
 	const router = useRouter();
+	//max file size of 60 mb
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+	const MAX_FILE_SIZE = 70 * 1024 * 1024;
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!file || !title || !description) {
-			alert("Please fill in all fields and select a file.");
+		if (!file) return;
+
+		if (file.size > MAX_FILE_SIZE) {
+			//TODO: add notification
+			alert("File size too large");
 			return;
 		}
 
 		setIsUploading(true);
-
 		const formData = new FormData();
 		formData.append("file", file);
 		formData.append("title", title);
@@ -29,21 +33,12 @@ const videoUpload = () => {
 		formData.append("originalSize", file.size.toString());
 
 		try {
-			const response = await fetch("/api/video-upload", {
-				method: "POST",
-				body: formData
-			});
-
-			if (!response.ok) {
-				throw new Error("Failed to upload video");
-			}
-
-			const data = await response.json();
-			console.log("Upload successful:", data);
+			const response = await axios.post("/api/video-upload", formData);
+			// check for 200 response
 			router.push("/");
 		} catch (error) {
-			console.error("Error uploading video:", error);
-			alert("Error uploading video. Please try again.");
+			console.log(error);
+			// notification for failure
 		} finally {
 			setIsUploading(false);
 		}
@@ -61,7 +56,7 @@ const videoUpload = () => {
 						type="text"
 						value={title}
 						onChange={(e) => setTitle(e.target.value)}
-						className="input input-bordered w-full text-white rounded-sm border-2 border-gray-300"
+						className="input input-bordered w-full border-2 border-white"
 						required
 					/>
 				</div>
@@ -72,7 +67,7 @@ const videoUpload = () => {
 					<textarea
 						value={description}
 						onChange={(e) => setDescription(e.target.value)}
-						className="textarea textarea-bordered w-full text-white rounded-sm border-2 border-gray-300"
+						className="textarea textarea-bordered w-full border-2 border-white"
 					/>
 				</div>
 				<div>
@@ -97,6 +92,6 @@ const videoUpload = () => {
 			</form>
 		</div>
 	);
-};
+}
 
-export default videoUpload;
+export default VideoUpload;

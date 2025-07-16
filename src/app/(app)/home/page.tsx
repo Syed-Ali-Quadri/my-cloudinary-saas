@@ -1,38 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import VideoCard from "@/components/VideoCard";
-import { Video } from "@/types/Video";
-import React, { useCallback, useEffect, useState } from "react";
-
-const HomePage = () => {
+import { Video } from "@/types";
+function Home() {
 	const [videos, setVideos] = useState<Video[]>([]);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
 	const fetchVideos = useCallback(async () => {
-		setLoading(true);
-		setError(null);
 		try {
-			const response = await fetch("/api/videos");
-
-			if (!response.ok) {
-				setError("Failed to fetch videos");
-				throw new Error("Failed to fetch videos");
-			}
-
-			const data = await response.json();
-
-			console.log("Fetched videos:", data);
-
-			if (Array.isArray(data)) {
-				setVideos(data);
+			const response = await axios.get("/api/videos");
+			if (Array.isArray(response.data)) {
+				setVideos(response.data);
 			} else {
-				setError("Invalid data format");
+				throw new Error(" Unexpected response format");
 			}
 		} catch (error) {
-			console.error("Error fetching videos:", error);
-			setError("An error occurred while fetching videos");
+			console.log(error);
+			setError("Failed to fetch videos");
 		} finally {
 			setLoading(false);
 		}
@@ -45,19 +31,18 @@ const HomePage = () => {
 		[fetchVideos]
 	);
 
-	const handleDownload = useCallback((url: string, title: string) => {
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = `${title}.mp4`;
-		// link.setAttribute("download", `${title}.mp4`);
-		// link.setAttribute("target", "_blank");
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}, []);
+	const handleDownload = useCallback((url: string, title: string) => () => {
+			const link = document.createElement("a");
+			link.href = url;
+			link.setAttribute("download", `${title}.mp4`);
+			link.setAttribute("target", "_blank");
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+		}, []);
 
 	if (loading) {
-		return <div>Loading videos...</div>;
+		return <div>Loading...</div>;
 	}
 
 	return (
@@ -78,6 +63,6 @@ const HomePage = () => {
 					</div>}
 		</div>
 	);
-};
+}
 
-export default HomePage;
+export default Home;

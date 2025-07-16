@@ -19,13 +19,15 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
 	const [isPreviewError, setIsPreviewError] = useState(false); // Removed React.useState for cleaner syntax
 
 	const getThumbnailUrl = useCallback((publicId: string) => {
-		// Fixed typo in parameter (publciId -> publicId)
-		return getCldImageUrl({
-			src: publicId, // Fixed typo (publciId -> publicId)
+		return getCldVideoUrl({
+			src: publicId,
 			width: 400,
-			height: 225, // Corrected height to match preview video aspect ratio (255 -> 225)
+			height: 225,
 			crop: "fill",
-			gravity: "auto"
+			gravity: "auto",
+			format: "jpg",
+			// Generate thumbnail from video frame
+			rawTransformations: ["so_0"] // Gets frame at 0 seconds
 		});
 	}, []);
 
