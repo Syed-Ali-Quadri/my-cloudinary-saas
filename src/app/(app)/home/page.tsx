@@ -57,6 +57,7 @@ function Home() {
 	if (loading) {
 		return <div>Loading...</div>;
 	}
+	console.log(error)
 
 	return (
 		<div className="container mx-auto p-4">
