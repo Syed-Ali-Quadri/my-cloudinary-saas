@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
 					},
 					(error, result) => {
 						if (error) reject(error);
-						else resolve(result);
+						else resolve(result as CloudinaryUploadResult);
 					}
 				);
 				uploadStream.end(buffer);
