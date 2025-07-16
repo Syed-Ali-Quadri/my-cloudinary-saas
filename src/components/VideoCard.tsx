@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { getCldImageUrl, getCldVideoUrl } from "next-cloudinary";
+import { getCldVideoUrl } from "next-cloudinary";
 import { Download, Clock, FileDown, FileUp } from "lucide-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime"; // Fixed typo in import (realtiveTime -> relativeTime)
 import { filesize } from "filesize";
 import Image from "next/image";
-import { Video } from "@/types/Video";
+import { Video } from "@/app/(app)/home/page";
+
 
 dayjs.extend(relativeTime);
 
@@ -18,8 +19,9 @@ const VideoCard: React.FC<VideoCardProps> = ({ video, onDownload }) => {
 	const [isHovered, setIsHovered] = useState(false); // Removed React.useState for cleaner syntax
 	const [isPreviewError, setIsPreviewError] = useState(false); // Removed React.useState for cleaner syntax
 
+	// FIXED: Generate thumbnail from video, not image
 	const getThumbnailUrl = useCallback((publicId: string) => {
-		return getCldImageUrl({
+		return getCldVideoUrl({
 			src: publicId,
 			width: 400,
 			height: 225,
